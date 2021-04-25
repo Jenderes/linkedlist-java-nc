@@ -2,7 +2,6 @@ package com.homework.collect;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 
 /**
  * Собственная реализация MyLinkedList
@@ -76,7 +75,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
         } else{
             Node<E> find = findNode(index);
             Node<E> prevN = find.prevNode;
-            Node<E> newNode = new Node<E>(element);
+            Node<E> newNode = new Node<>(element);
             newNode.prevNode = prevN;
             newNode.nextNode = find;
             find.prevNode = newNode;
@@ -95,7 +94,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
      */
     public void addFirst(E element){
         Node<E> h = head;
-        Node<E> newNode = new Node<E>(element);
+        Node<E> newNode = new Node<>(element);
         newNode.nextNode = h;
         head = newNode;
         if (h == null){
@@ -131,6 +130,19 @@ public class MyLinkedList<E> implements LinkedList<E>{
     }
 
     /**
+     * Поиск значения по индаксу
+     * @param index индекс элемента
+     * @return значение элемента
+     */
+    @Override
+    public E get(int index) {
+        if (checkByIndex(index)){
+            throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
+        }
+        return findNode(index).element;
+    }
+
+    /**
      * Поиск индекса по значению
      * @param element Искомый элемент
      * @return индекс элемента в листе, если элемент не найден возврощает -1
@@ -141,7 +153,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
         int index = -1;
         while(current != null) {
             index++;
-            if (current.element == element){
+            if (current.element.equals(element)){
                 break;
             }
             current = current.nextNode;
@@ -168,7 +180,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
      * @param find Удаляемый узел
      * @return Удаленное значение
      */
-    public E deleteNode(Node<E> find) {
+    private E deleteNode(Node<E> find) {
         E element = find.element;
         Node<E> next = find.nextNode;
         Node<E> prev = find.prevNode;
@@ -197,7 +209,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
      */
     private Node<E> findNode(int index){
         Node<E> find;
-        if (index <= size/2) {
+        if (index < (size >> 1)) {
             find = head;
             for (int i = 0; i < index; i++){
                 find = find.nextNode;
@@ -239,7 +251,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
     }
 
     /**
-     * @param index
+     * @param index полученый индекс
      * @return boolean границы нахождения индекса
      */
     boolean checkByIndex(int index){
@@ -275,16 +287,44 @@ public class MyLinkedList<E> implements LinkedList<E>{
      */
     @Override
     public String toString() {
-        return null;
+        StringBuilder strMyLinkedList = new StringBuilder();
+        Node<E> current = head;
+        strMyLinkedList.append("MyLinkedList: ");
+        while (current != null){
+            strMyLinkedList.append(current.element.toString()).append(", ");
+            current = current.nextNode;
+        }
+        return strMyLinkedList.toString();
     }
 
-
     /**
-     * @return MyLinkedListIterator
+     * Реализует interface Iterator для перебора значений MyLinkedList
+     * @return анонимный класс Iterator
      */
     @Override
     public Iterator<E> iterator() {
-        return new MyLinkedListIterator(head);
+        return new Iterator<E>() {
+            private Node<E> current = head;
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public E next() {
+                if (current == null) {
+                    throw new NoSuchElementException();
+                }
+                E element = current.element;
+                current = current.nextNode;
+                return element;
+            }
+
+            @Override
+            public void remove() {
+                deleteNode(current);
+            }
+        };
     }
 
 
@@ -302,38 +342,6 @@ public class MyLinkedList<E> implements LinkedList<E>{
         }
         public Node(E element) {
             this.element = element;
-        }
-    }
-
-    /**
-     * Реализует interface Iterator для перебора значений MyLinkedList
-     */
-    private class MyLinkedListIterator implements Iterator<E> {
-
-        private Node<E> current;
-
-        public MyLinkedListIterator(Node<E> current) {
-            this.current = current;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return current != null;
-        }
-
-        @Override
-        public E next() {
-            if (current == null) {
-                throw new NoSuchElementException();
-            }
-            E element = current.element;
-            current = current.nextNode;
-            return element;
-        }
-
-        @Override
-        public void remove() {
-            deleteNode(current);
         }
     }
 }
