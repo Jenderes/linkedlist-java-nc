@@ -74,15 +74,15 @@ public class MyLinkedList<E> implements LinkedList<E>{
             addFirst(element);
         } else{
             Node<E> find = findNode(index);
-            Node<E> prevN = find.prevNode;
+            Node<E> prevNode = find.prevNode;
             Node<E> newNode = new Node<>(element);
-            newNode.prevNode = prevN;
+            newNode.prevNode = prevNode;
             newNode.nextNode = find;
             find.prevNode = newNode;
-            if (prevN == null) {
+            if (prevNode == null) {
                 head = newNode;
             } else{
-                prevN.nextNode = newNode;
+                prevNode.nextNode = newNode;
             }
             size++;
         }
@@ -124,6 +124,7 @@ public class MyLinkedList<E> implements LinkedList<E>{
             next = current.nextNode;
             current.nextNode = null;
             current.prevNode = null;
+            current.element = null;
         }
         head = tail = null;
         size = 0;
