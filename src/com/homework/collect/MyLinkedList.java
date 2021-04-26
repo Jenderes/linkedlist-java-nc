@@ -305,24 +305,31 @@ public class MyLinkedList<E> implements LinkedList<E>{
     public Iterator<E> iterator() {
         return new Iterator<E>() {
             private Node<E> current = head;
+            private Node<E> next = head;
             @Override
             public boolean hasNext() {
-                return current != null;
+                return next != null;
             }
 
             @Override
             public E next() {
-                if (current == null) {
+                if (next == null) {
                     throw new NoSuchElementException();
                 }
-                E element = current.element;
-                current = current.nextNode;
-                return element;
+                current = next;
+                next = next.nextNode;
+                return current.element;
             }
 
             @Override
             public void remove() {
+                if (current == null){
+                    throw new IllegalStateException();
+                }
+                Node<E> lastCurrent = current.nextNode;
                 deleteNode(current);
+                current = null;
+                next = lastCurrent;
             }
         };
     }
